@@ -22,7 +22,7 @@ public class UserService implements UserDetailsService{
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return (User) userRepository.findByUsername(username);
     }
 
     public void saveNew(User user) {
