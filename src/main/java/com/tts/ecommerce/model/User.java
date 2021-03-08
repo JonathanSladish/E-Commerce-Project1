@@ -1,108 +1,66 @@
 package com.tts.ecommerce.model;
 
-import java.util.Date;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Map;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
+import javax.validation.constraints.Pattern;
 
-import org.apache.catalina.Role;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-public class User {
+public class User implements UserDetails {
+
+    @Transient
+    private boolean accountNonExpired = true;
+    @Transient
+    private boolean accountNonLocked = true;
+    @Transient
+    private boolean credentialsNonExpired = true;
+    @Transient
+    private boolean enabled = true;
+    @Transient
+    private Collection<GrantedAuthority> authorities= null;
+
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_id")
     private Long id;
-    private String username;
-    private String firstName;
-    private String lastName;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles;
+    @Length(min = 3, message = "Your username must have at least 3 characters")
+    @Length(max = 15, message = "Your username cannot have more than 15 characters")
+    @Pattern(regexp="[^\\s]+", message="Your username cannot contain spaces")
+    String username;
 
-    @Length(min = 5, message = "A password must have at least 5 characters")
-    private String password;
+    @Length(min = 5, message = "Your password must have at least 5 characters")
+    String password;
 
-    public String getPassword() {
-        return password;
-    }
+    @ElementCollection
+    Map<Product, Integer> cart;
 
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
 
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-
-    public User() {
-
-    }
-
-
-    public User(String username, String firstName, String lastName, Date createdAt) {
-        super();
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.createdAt = createdAt;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @CreationTimestamp
-    private Date createdAt;
 
 
 
